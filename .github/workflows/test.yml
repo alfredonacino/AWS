@@ -1,23 +1,29 @@
-{ 
-  "Version": "2012-10-17", 
-  "Statement": [ 
-    { 
-      "Effect": "Allow", 
-      "Action": [ 
-        "sts:TagSession", 
-        "sts:AssumeRoleWithWebIdentity" 
-      ], 
-      "Principal": { 
-        "Federated": "arn:aws:iam::216608711744:oidc-provider/token.actions.githubusercontent.com" 
-      }, 
-      "Condition": { 
-        "StringEquals": { 
-          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com" 
-        }, 
-        "StringLike": { 
-          "token.actions.githubusercontent.com:sub": "repo:*/hacktricks-training*" 
-        } 
-      } 
-    } 
-  ] 
-} 
+name: 'test AWS Access'
+ 
+# The workflow should only trigger on pull requests to the main branch
+on:
+  pull_request:
+    branches:
+      - main
+ 
+# Required to get the ID Token that will be used for OIDC
+permissions:
+  id-token: write
+  contents: read # needed for private repos to checkout
+ 
+jobs:
+  aws:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+ 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::216608711744:role/sts-lab-2-target 
+          role-session-name: OIDCSession
+ 
+      - run: aws sts get-caller-identity
+        shell: bash
