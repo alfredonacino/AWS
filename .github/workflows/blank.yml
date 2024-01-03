@@ -19,7 +19,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::216608711744:role/sts-lab-2-target 
+          role-to-assume: arn:aws:iam::059426714005:role/sts-lab-2-target 
           role-session-name: OIDCSession
       
       - run: aws s3 ls
